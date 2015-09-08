@@ -21,7 +21,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 var Message = Backbone.Model.extend({
-  url: 'http://127.0.0.1:3000',
+  url: 'http://127.0.0.1:3000/data',
   defaults: {
     username: 'anonymous',
     text: 'foooos'
@@ -31,7 +31,7 @@ var Message = Backbone.Model.extend({
 var Messages = Backbone.Collection.extend({
 
   model: Message,
-  url: 'http://127.0.0.1:3000',
+  url: 'http://127.0.0.1:3000/data',
 
   loadMsgs: function() {
     this.fetch();  //{data: { order: '-createdAt' }}

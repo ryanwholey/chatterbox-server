@@ -9,7 +9,13 @@ var url = require('url');
 var path = require('path');
 var bodyparser = require('body-parser');
 
-app.get('/', function(req, res){
+app.use(express.static(path.join(__dirname, '../', 'client/')));
+
+app.get('/',function(req,res){
+  res.redirect('refactor.html');
+});
+
+app.get('/data', function(req, res){
   res.set(defaultCorsHeaders);
   res.set('Content-Type','application/json');
   res.status(200);
@@ -33,7 +39,7 @@ app.options('/', function(req, res) {
   res.send();
 })
 
-app.post('/', function(req, res){
+app.post('/data', function(req, res){
   console.log("post request");
   res.set(defaultCorsHeaders);
   res.set('Content-Type','application/json');
