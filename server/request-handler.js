@@ -11,8 +11,93 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
+var url = require('url');
+var fs = require('fs');
+var path = require('path');
+
+// var data = {};
+// data.results = [
+// {
+//   "username" : "randomUser",
+//   "text" : "Mooooose",
+//   "roomname" : "lobby"
+// },
+// {
+//   "username" : "Mr.Norby",
+//   "text" : "Hallouuu",
+//   "roomname" : "lobby"
+// }
+// ];
+
+// var getData = function(){
+//   var data = fs.readFile('./data.json', function(err, data){
+//     if(err){
+//       console.error(err);
+//     }else if(data){
+
+//     }
+//   });
+//   return JSON.parse(data);
+// };
+
+var writeData = function(messages){
+  
+  fs.writeFile(path.join(__dirname, './', 'data.json'), JSON.stringify(messages));
+}
+
+// var resetData = function(){
+//   writeData()
+// }
 
 var requestHandler = function(request, response) {
+
+  var statusCode = 200;
+  var headers = defaultCorsHeaders;
+  headers['Content-Type'] = "application/json";
+  response.writeHead(statusCode, headers);
+
+  if(request.method==='GET'){
+    // var path = url.parse(request.url);
+    // var path = url.parse(request);
+    // console.log("path: " + path);
+    // if(!/^\/courses\//.test(path) && !/^\//.test(path)){
+
+    //   response.writeHead(404, headers);
+    //   response.end();
+    // }else{
+      fs.readFile(path.join(__dirname, './', 'data.json'), function(err, data){
+        if(err){
+          throw err; 
+        } 
+        response.end(data);   
+      });
+    // }
+
+  } else if(request.method === 'POST'){
+    var mssgData = '';
+    request.on('data', function(chunk) {
+      mssgData += chunk;
+    });
+    request.on('end', function(){
+      response.writeHead(201, headers);
+      response.end();
+      fs.readFile(path.join(__dirname, './', 'data.json'), function(err, data){
+        if(err){throw err}
+        var messages = JSON.parse(data);
+        var message = JSON.parse(mssgData);
+        message.objectId = +messages.id + 1;
+        messages.id = +messages.id + 1;  
+        messages.results.unshift(message);
+        writeData(messages);  
+      });
+    })
+
+    
+    
+  } else{
+    response.end();
+  }
+
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -30,20 +115,20 @@ var requestHandler = function(request, response) {
   console.log("Serving request type " + request.method + " for url " + request.url);
 
   // The outgoing status.
-  var statusCode = 200;
+  // var statusCode = 200;
 
   // See the note below about CORS headers.
-  var headers = defaultCorsHeaders;
+  // var headers = defaultCorsHeaders;
 
   // Tell the client we are sending them plain text.
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = "text/plain";
+  // headers['Content-Type'] = "application/json";
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  response.writeHead(statusCode, headers);
+  // response.writeHead(statusCode, headers);
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
@@ -52,7 +137,7 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end("Hello, World!");
+  // response.end(sendData || "hllo");
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -71,3 +156,4 @@ var defaultCorsHeaders = {
   "access-control-max-age": 10 // Seconds.
 };
 
+module.exports.requestHandler = requestHandler;
