@@ -45,9 +45,11 @@ var writeData = function(messages){
   fs.writeFile(path.join(__dirname, './', 'data.json'), JSON.stringify(messages));
 }
 
-// var resetData = function(){
-//   writeData()
-// }
+var resetData = function(){
+  var d = {results:[{"username":"randomUser","text":"Mooooose","roomname":"lobby","objectId":"0"},{"username":"Mr.Norby","text":"Hallouuu","roomname":"lobby","objectId":"1"}]};
+  writeData(d);
+}
+// resetData();
 
 var requestHandler = function(request, response) {
 
@@ -57,21 +59,21 @@ var requestHandler = function(request, response) {
   response.writeHead(statusCode, headers);
 
   if(request.method==='GET'){
-    // var path = url.parse(request.url);
-    // var path = url.parse(request);
-    // console.log("path: " + path);
-    // if(!/^\/courses\//.test(path) && !/^\//.test(path)){
+    var reqPath = url.parse(request.url).pathname;
+    // console.log(reqPath);
+    if(!/^\/$/.test(reqPath) && !/^\/classes$/.test(reqPath) && !/^\/classes\//.test(reqPath)){
 
-    //   response.writeHead(404, headers);
-    //   response.end();
-    // }else{
+
+      response.writeHead(404, headers);
+      response.end();
+    }else{
       fs.readFile(path.join(__dirname, './', 'data.json'), function(err, data){
         if(err){
           throw err; 
         } 
         response.end(data);   
       });
-    // }
+    }
 
   } else if(request.method === 'POST'){
     var mssgData = '';
@@ -94,9 +96,12 @@ var requestHandler = function(request, response) {
 
     
     
-  } else{
+  } else if(request.method === "OPTIONS"){
     response.end();
   }
+
+
+  
 
   // Request and Response come from node's http module.
   //
