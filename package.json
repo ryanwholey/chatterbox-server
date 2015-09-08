@@ -1,5 +1,6 @@
 {
   "name": "chatterbox",
+  "description": "awesome chat app to chat and app and stuff!",
   "version": "0.0.1",
   "main": "server/basic-server.js",
   "author": "Hack Reactor",
@@ -7,10 +8,14 @@
   "scripts": {
     "test": "mocha server/spec"
   },
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "express": "4.13.x"
+  },
   "devDependencies": {
     "mocha": "^1.21.4",
     "request": "^2.34.0",
     "chai": "^1.9.0",
-    "nodemon":"1.4.x"
+    "nodemon": "1.4.x"
   }
 }
